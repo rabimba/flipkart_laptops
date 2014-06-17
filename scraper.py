@@ -26,5 +26,4 @@ def scrape_laptop(url):
 start = 0
 while True:
     data = scraperwiki.scrape('http://www.flipkart.com/computers/laptops/all?response-type=json&inf-start=%d' % start)
-    if data['count'] <= 0:
-        print data;
+    print data;
