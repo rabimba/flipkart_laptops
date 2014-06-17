@@ -27,3 +27,14 @@ start = 0
 while True:
     data = scraperwiki.scrape('http://www.flipkart.com/computers/laptops/all?response-type=json&inf-start=%d' % start)
     print data;
+#    if data['count'] <= 0:
+ #       break
+    tree = lxml.html.fromstring(data['html'])
+    for link in tree.findall('.//a[@class="prd-img"]'):
+        url = link.get('href', '')
+        if not url:
+            continue
+        parsed_url = urlparse.urlparse(url)
+        print parsed_url.path
+        scrape_laptop('http://www.flipkart.com' + parsed_url.path)
+    start += 20
