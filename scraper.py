@@ -2,15 +2,17 @@ import scraperwiki
 import json
 import re
 import urlparse
-from lxml import etree
+import lxml.html
 
 def scrape_laptop(url):
     html = scraperwiki.scrape(url)
-    tree = etree.HTML(html)
+    tree = lxml.html.fromstring(html)
     title = tree.find('.//h1')
+    price = tree.find('.//span[@id="fk-mprod-our-id"]')
     data = {
         'title': title.text if title is not None else '',
         'url': url,
+        'price': price.text_content() if price is not None else ''
     }
     for row in tree.findall('.//table[@class="fk-specs-type2"]//tr'):
         label = row.find('th')
@@ -23,11 +25,10 @@ def scrape_laptop(url):
 
 start = 0
 while True:
-    data = scraperwiki.scrape('http://www.flipkart.com/laptops/all?response-type=json&inf-start=%d' % start)
-    data = json.loads(data)
+    data = scraperwiki.scrape('http://www.flipkart.com/computers/laptops/all?response-type=json&inf-start=%d' % start)
     if data['count'] <= 0:
         break
-    tree = etree.HTML(data['html'])
+    tree = lxml.html.fromstring(data['html'])
     for link in tree.findall('.//a[@class="prd-img"]'):
         url = link.get('href', '')
         if not url:
